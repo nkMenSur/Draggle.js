@@ -50,11 +50,21 @@ var DnD = (function ($) {
         registerHammers(newlyAddedItems);
     }
 
+    function wrap(el, wrapper) {
+        el.parentNode.insertBefore(wrapper, el);
+        wrapper.appendChild(el);
+    }
+
     function wrapDropItems($itemsToWrap) {
         for(var i = 0; i < $itemsToWrap.length; i++) {
+            
             var current = $itemsToWrap[i];
+            var wrapper = document.createElement('div');
+            
+            wrapper.classList.add(droppingIndicators._dropItemPlaceholderSelector);
+            wrap(current, wrapper)
 
-            $(current).wrap('<div class="'+ droppingIndicators._dropItemPlaceholderSelector +'"></div>');
+            
         }
     }
 
@@ -197,14 +207,14 @@ var DnD = (function ($) {
     };
 });
 
-var config = {
-    dropItemSelector: 'drop-item',
-    dropItemContainerSelector: 'drop-item-container',
-    dropItemPlaceholder: 'drop-item-placeholder',
-}
-
-var dragndrop = DnD();
 $(document).ready(function() {
+    var config = {
+        dropItemSelector: 'drop-item',
+        dropItemContainerSelector: 'drop-item-container',
+        dropItemPlaceholder: 'drop-item-placeholder',
+    }
+    
+    var dragndrop = DnD();
     
     dragndrop.init(config)
 
