@@ -7,15 +7,11 @@ min requirements: hammer.2.0.8.js && IE11+
 # Usage
 ## HTML:
 ```HTML
+<!-- this it the minimum requirement but you can have as many drop-item-containers and drop-items as you like -->
 <div class="drop-item-container">
   <div class="drop-item"></div>
 </div>
-<div class="drop-item-container">
 
-</div>
-<div class="drop-item-container">
-
-</div>
 ```
 ## JS:
 ```javascript
