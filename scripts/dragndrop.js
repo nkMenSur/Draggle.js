@@ -1,9 +1,14 @@
 "use strict";
 
-var DnD = (function ($) {
+var DnD = (function () {
     var initialized = false
-    var $ = $ || jQuery;
     var Hammer = window.Hammer;
+
+    if(!Hammer) {
+        console.error('HammerJs 2.0.8 needs to be loaded befor dragNdrop');
+        return;
+    }
+
     var ticking = false;
 
     var currentMovingElement = null;
@@ -30,7 +35,7 @@ var DnD = (function ($) {
 
     var _init = function(config) {
         if(initialized) {
-            console.log("You can't initialize this module twice.");
+            console.log("You can't initialize this module twice. Use registerAdditionalDropItems instead.");
             return;
         }
 
@@ -39,8 +44,9 @@ var DnD = (function ($) {
             mapDropIndicatorClasses(config, droppingIndicators);            
         }
 
-        var $itemsToWrap = $('.' + droppingIndicators._dropItemSelector);
-        wrapDropItems($itemsToWrap);
+        var itemsToWrap = document.querySelectorAll('.' + droppingIndicators._dropItemSelector);
+        
+        wrapDropItems(itemsToWrap);
         bindListeners(droppingIndicators);
         initialized = true;
     }
@@ -55,16 +61,14 @@ var DnD = (function ($) {
         wrapper.appendChild(el);
     }
 
-    function wrapDropItems($itemsToWrap) {
-        for(var i = 0; i < $itemsToWrap.length; i++) {
+    function wrapDropItems(itemsToWrap) {
+        for(var i = 0; i < itemsToWrap.length; i++) {
             
-            var current = $itemsToWrap[i];
+            var current = itemsToWrap[i];
             var wrapper = document.createElement('div');
             
             wrapper.classList.add(droppingIndicators._dropItemPlaceholderSelector);
-            wrap(current, wrapper)
-
-            
+            wrap(current, wrapper);            
         }
     }
 
@@ -83,7 +87,7 @@ var DnD = (function ($) {
                     if(dropContainer) {
                         moveItemToNewContainer(ev, dropContainer);
                     } else {
-                        resetElement(ev);
+                        resetCurrentMovingElement();
                     }
                 }
             });
@@ -93,12 +97,12 @@ var DnD = (function ($) {
     function bindListeners(droppingIndicators) {
         var dropItems = document.querySelectorAll('.' + droppingIndicators._dropItemSelector);        
         registerHammers(dropItems);
-    }
+    }    
 
     function moveItemToNewContainer(ev, dropContainer) {
-        var itemToBeMoved = $(ev.target.parentElement).detach();
-        dropContainer.append(itemToBeMoved[0]);
-        resetElement(ev);
+        var itemToBeMoved = ev.target.parentElement.parentNode.removeChild(ev.target.parentElement);
+        dropContainer.appendChild(itemToBeMoved);
+        resetCurrentMovingElement();
     }
 
     function getDropContainerUnderDroppin(ev) {
@@ -113,41 +117,12 @@ var DnD = (function ($) {
         } else {
             return null;
         }
-    }
-    
-    function drawDebugCross(x,y) {
-        var bodyHasDebug = $('#horizontal').length > 0 && $('#vertical').length > 0;
-        
-        if(!bodyHasDebug) {
-            var horizontal = $( '<div id="horizontal" style="height: 1px; width: 5000px; background-color: red; position: absolute;" />' )
-            var vertical = $( '<div id="vertical" style="height: 5000px; width: 1px; background-color: red; position: absolute;" />' )
-            
-            $('body').append(horizontal)
-            $('body').append(vertical)
-        }else {
-            $('#horizontal').css('top', y)
-            $('#vertical').css('left', x)
-        }
+    }    
 
-        console.log('x: '+ x)
-        console.log('y: '+ y)
-
-        $('#horizontal').css({
-            'top':  y,
-            'left': 0
-        })
-        $('#vertical').css({
-            'left': x,
-            'top': 0
-        })
-    }
-
-    function resetElement(ev) {
-        var current = $(currentMovingElement);
-
-        if(current.length) {
-            current.addClass(droppingIndicators._animationSelector);
-            current.removeClass(droppingIndicators._movingSelector);
+    function resetCurrentMovingElement() {
+        if(currentMovingElement) {
+            currentMovingElement.classList.add(droppingIndicators._animationSelector);
+            currentMovingElement.classList.remove(droppingIndicators._movingSelector);
 
             currentMovingElement.style.removeProperty('webkitTransform');
             currentMovingElement.style.removeProperty('mozTransform');
@@ -159,10 +134,10 @@ var DnD = (function ($) {
     }
 
     function onPan(ev) {
-        var current = $(ev.target);
-
-        current.removeClass(droppingIndicators._animationSelector);
-        current.addClass(droppingIndicators._movingSelector);
+        var current = ev.target;
+        
+        current.classList.remove(droppingIndicators._animationSelector);
+        current.classList.add(droppingIndicators._movingSelector);
 
         transform.translate = {
 	        x: ev.deltaX,
@@ -207,7 +182,18 @@ var DnD = (function ($) {
     };
 });
 
-$(document).ready(function() {
+function ready(callback){
+    // in case the document is already rendered
+    if (document.readyState!='loading') callback();
+    // modern browsers
+    else if (document.addEventListener) document.addEventListener('DOMContentLoaded', callback);
+    // IE <= 8
+    else document.attachEvent('onreadystatechange', function(){
+        if (document.readyState=='complete') callback();
+    });
+}
+
+ready(function() {
     var config = {
         dropItemSelector: 'drop-item',
         dropItemContainerSelector: 'drop-item-container',
