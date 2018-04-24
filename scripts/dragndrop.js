@@ -1,7 +1,7 @@
 "use strict";
 
 var DnD = (function () {
-  var initialized = false
+  var initialized = false;
   var Hammer = window.Hammer;
 
   if (!Hammer) {
@@ -10,71 +10,76 @@ var DnD = (function () {
   }
 
   var ticking = false;
-
+  //placeholder for the element that is currently moving
   var currentMovingElement = null;
 
+  //polifill for browsers that don't support requestAnimationFrame
   var reqAnimationFrame = (function () {
     return window[Hammer.prefixed(window, 'requestAnimationFrame')] || function (callback) {
       window.setTimeout(callback, 1000 / 60);
     };
   })();
 
-  var droppingIndicators = {
-    _dropItemSelector: 'drop-item',
-    _dropItemContainerSelector: 'drop-item-container',
-    _dropItemPlaceholderSelector: 'drop-item-placeholder',
-    _animationSelector: 'animate',
-    _movingSelector: 'moving'
-  }
+  var classPrefix = '.';
 
-  var transform = {
-    translate: {
-      x: 0,
-      y: 0
-    }
+  //default class names that will be used if the user doesn't provide them via a config object
+  var droppingIndicators = {
+    dropItemSelector: 'drop-item',
+    dropItemContainerSelector: 'drop-item-container',
+    dropItemPlaceholderSelector: 'drop-item-placeholder',
+    animationSelector: 'animate',
+    movingSelector: 'moving'
   };
 
-  var userConfig = null;
+  //placeholder variable for the transformation style values
+  var transform = {};
 
-  var _init = function (config) {
+  //a public function that handles the plugin initialisazion
+  var init = function (config) {
+    //preventing multiple calling of init() and with it, unnecessary event bing and hammer manager instances
     if (initialized) {
       console.log("You can't initialize this module twice. Use registerAdditionalDropItems instead.");
       return;
     }
 
+    //if a config is provided, the values will override the default values in droppingIndicators, which in turn is used internally
     if (config) {
-      userConfig = config;
       mapDropIndicatorClasses(config, droppingIndicators);
     }
+    //get all movable items
+    var itemsToWrap = document.querySelectorAll(classPrefix.concat(droppingIndicators.dropItemSelector));
 
-    var itemsToWrap = document.querySelectorAll('.' + droppingIndicators._dropItemSelector);
-
+    //wrap all movable items
     wrapDropItems(itemsToWrap);
+    //the name says it all
     bindListeners(droppingIndicators);
     initialized = true;
-  }
+  };
 
-  var _registerAdditionalDropItems = function (newlyAddedItems) {
+  //public method that takes an array of nodes. It's used to bind dynamically the grag and drop features on dynamically added nodes
+  var registerAdditionalDropItems = function (newlyAddedItemsArray) {
     wrapDropItems(newlyAddedItems);
     registerHammers(newlyAddedItems);
+  };
+
+  //wraps nodes with other nodes
+  function wrap(toBeWrapped, wrapper) {
+    toBeWrapped.parentNode.insertBefore(wrapper, toBeWrapped);
+    wrapper.appendChild(toBeWrapped);
   }
 
-  function wrap(el, wrapper) {
-    el.parentNode.insertBefore(wrapper, el);
-    wrapper.appendChild(el);
-  }
-
-  function wrapDropItems(itemsToWrap) {
-    for (var i = 0; i < itemsToWrap.length; i++) {
-
-      var current = itemsToWrap[i];
+  //wrapps a collection of items with a div that has a defined classname.
+  function wrapDropItems(itemsToWrapArray) {
+    for (var i = 0; i < itemsToWrapArray.length; i++) {
+      var current = itemsToWrapArray[i];
       var wrapper = document.createElement('div');
 
-      wrapper.classList.add(droppingIndicators._dropItemPlaceholderSelector);
+      wrapper.classList.add(droppingIndicators.dropItemPlaceholderSelector);
       wrap(current, wrapper);
     }
   }
 
+  //bind hammer events on all dropItems
   function registerHammers(dropItems) {
     for (var i = 0; i < dropItems.length; i++) {
       var current = dropItems[i];
@@ -84,33 +89,44 @@ var DnD = (function () {
         threshold: 0,
         pointers: 0
       }));
-      hammerManager.add(new Hammer.Swipe()).recognizeWith(hammerManager.get('pan'));
-      hammerManager.on("panstart panmove", onPan);
-      hammerManager.on("hammer.input", function (ev) {
-        if (ev.isFinal) {
-          var dropContainer = getDropContainerUnderDroppin(ev);
 
-          if (dropContainer) {
-            moveItemToNewContainer(ev, dropContainer);
-          } else {
-            resetCurrentMovingElement();
-          }
+      hammerManager.on("panstart panmove", onPan);
+      hammerManager.on("hammer.input", function (e) {
+        //hammer can be a piece of shit sometimes
+        if (e.isFinal) {
+          onRelease(e);
         }
       });
     }
   }
 
+  //the name again...
+  function onRelease(e) {
+    //gets the item under the center of the moving item. If it's not a drop-item-container, null will be returned
+    var dropContainer = getDropContainerUnderDroppin(e);
+
+    //if its a drop-item-container, take the moving item out of the current container and move it to the new container. Otherwise put it back where it came from.
+    if (dropContainer) {
+      moveItemToNewContainer(e, dropContainer);
+    } else {
+      resetCurrentMovingElement();
+    }
+  }
+
+  //it does what it says
   function bindListeners(droppingIndicators) {
-    var dropItems = document.querySelectorAll('.' + droppingIndicators._dropItemSelector);
+    var dropItems = document.querySelectorAll(classPrefix.concat(droppingIndicators._dropItemSelector));
     registerHammers(dropItems);
   }
 
+  //it does what it says
   function moveItemToNewContainer(ev, dropContainer) {
     var itemToBeMoved = ev.target.parentElement.parentNode.removeChild(ev.target.parentElement);
     dropContainer.appendChild(itemToBeMoved);
     resetCurrentMovingElement();
   }
 
+  //it does what it says. But it takes the centerpoint of the moving item as a reference.
   function getDropContainerUnderDroppin(ev) {
     var rect = ev.target.getBoundingClientRect();
     var x = rect.x + rect.width / 2;
@@ -118,17 +134,17 @@ var DnD = (function () {
 
     var elementOnPoint = document.elementFromPoint(x, y) || null;
 
-    if (elementOnPoint !== null && elementOnPoint.classList.toString().indexOf(droppingIndicators._dropItemContainerSelector) > -1) {
-      return elementOnPoint
+    if (elementOnPoint !== null && elementOnPoint.classList.toString().indexOf(droppingIndicators.dropItemContainerSelector) > -1) {
+      return elementOnPoint;
     } else {
       return null;
     }
   }
-
+  //puts the moving item to where it came from.
   function resetCurrentMovingElement() {
     if (currentMovingElement) {
-      currentMovingElement.classList.add(droppingIndicators._animationSelector);
-      currentMovingElement.classList.remove(droppingIndicators._movingSelector);
+      currentMovingElement.classList.add(droppingIndicators.animationSelector);
+      currentMovingElement.classList.remove(droppingIndicators.movingSelector);
 
       currentMovingElement.style.removeProperty('webkitTransform');
       currentMovingElement.style.removeProperty('mozTransform');
@@ -138,12 +154,12 @@ var DnD = (function () {
 
     ticking = false;
   }
-
+  //keeps the item attached to the cursor while moving.
   function onPan(ev) {
     var current = ev.target;
 
-    current.classList.remove(droppingIndicators._animationSelector);
-    current.classList.add(droppingIndicators._movingSelector);
+    current.classList.remove(droppingIndicators.animationSelector);
+    current.classList.add(droppingIndicators.movingSelector);
 
     transform.translate = {
       x: ev.deltaX,
@@ -154,13 +170,14 @@ var DnD = (function () {
     requestElementUpdate();
   }
 
+  //overrides the internal classnames with the ones that the user provided
   function mapDropIndicatorClasses(config, indicators) {
     config.dropItemSelector && (indicators._dropItemSelector = config.dropItemSelector);
     config.dropItemContainerClass && (indicators._dropItemContainerSelector = config.dropItemContainerClass);
     config.dropItemPlaceholder && (indicators._dropItemPlaceholder = config.dropItemContainerClass);
-
   }
 
+  //it does what it says
   function requestElementUpdate() {
     if (!ticking && currentMovingElement !== null) {
       reqAnimationFrame(updateElementTransform);
@@ -168,6 +185,7 @@ var DnD = (function () {
     }
   }
 
+  //adding a translate3d style to the moving item.
   function updateElementTransform() {
     if (currentMovingElement) {
       var value = [
@@ -181,10 +199,10 @@ var DnD = (function () {
       ticking = false;
     }
   }
-
+  //public methods.
   return {
-    init: _init,
-    registerAdditionalDropItems: _registerAdditionalDropItems
+    init: init,
+    registerAdditionalDropItems: registerAdditionalDropItems
   };
 });
 
@@ -207,7 +225,6 @@ ready(function () {
   }
 
   var dragndrop = DnD();
-
   dragndrop.init(config)
 
 });
