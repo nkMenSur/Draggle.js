@@ -1,0 +1,25 @@
+*{
+    margin: 0;
+    padding: 0;
+    outline: 0;
+}
+.drop-item {
+    height:50px;
+    width:50px;
+    background-color: green;
+    display:inline-block;
+    cursor: pointer;
+}
+.drop-item-placeholder {
+    height:50px;
+    width:50px;
+    /* background-color: yellow; */
+    display:inline-block;
+    
+}
+.animate {
+    transition: all 0.3s;
+}
+.moving{
+    pointer-events: none;
+}
