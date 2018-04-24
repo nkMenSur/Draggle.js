@@ -1,6 +1,6 @@
 "use strict";
 
-var DnD = (function () {
+var dragNdrop = (function () {
   var initialized = false;
   var Hammer = window.Hammer;
 
@@ -224,7 +224,7 @@ ready(function () {
     dropItemPlaceholder: 'drop-item-placeholder',
   }
 
-  var dragndrop = DnD();
-  dragndrop.init(config)
+  var dNd = dragNdrop();
+  dNd.init(config)
 
 });
