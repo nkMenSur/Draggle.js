@@ -58,8 +58,8 @@ var DragonDrop = (function () {
 
   //public method that takes an array of nodes. It's used to bind dynamically the grag and drop features on dynamically added nodes
   var registerAdditionalDropItems = function (newlyAddedItemsArray) {
-    wrapDropItems(newlyAddedItems);
-    registerHammers(newlyAddedItems);
+    wrapDropItems(newlyAddedItemsArray);
+    registerHammers(newlyAddedItemsArray);
   };
 
   //wraps nodes with other nodes
