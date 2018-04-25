@@ -1,4 +1,4 @@
-# dragNdrop 0.1
+# DragonDrop 0.1
 A lightweight drag and drop library.
 
 min requirements: hammer.2.0.8.js && IE11+
