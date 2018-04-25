@@ -11,7 +11,6 @@ min requirements: hammer.2.0.8.js && IE11+
 <div class="drop-item-container">
   <div class="drop-item"></div>
 </div>
-
 ```
 ## JS:
 ```javascript
@@ -22,7 +21,7 @@ var config = {
   dropItemPlaceholder: 'drop-item-placeholder',
 }
 
-var dNd = dragNdrop();
+var dNd = DragonDrop();
 dNd.init(config)
 ```
 
