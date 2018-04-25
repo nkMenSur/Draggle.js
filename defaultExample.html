@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,6 +9,7 @@
     <script src="scripts/hammer.2.0.8.js"></script>
     <script src="scripts/dragndrop.0.1.js"></script>
 </head>
+
 <body>
     <div style="min-height: 100px; width: 600px; background-color: blue;" class="drop-item-container">
         <div class="drop-item">1</div>
@@ -32,5 +34,29 @@
     <div style="height:500px; width:300px; background-color:red; float:left;" class="drop-item-container"></div>
     <div style="height:500px; width:300px; background-color:pink; float:left;" class="drop-item-container"></div>
     <div style="clear:both;"></div>
+    <script>
+        function ready(callback) {
+            // in case the document is already rendered
+            if (document.readyState != 'loading') callback();
+            // modern browsers
+            else if (document.addEventListener) document.addEventListener('DOMContentLoaded', callback);
+            // IE <= 8
+            else document.attachEvent('onreadystatechange', function () {
+                if (document.readyState == 'complete') callback();
+            });
+        }
+
+        ready(function () {
+            var config = {
+                dropItemSelector: 'drop-item',
+                dropItemContainerSelector: 'drop-item-container',
+                dropItemPlaceholder: 'drop-item-placeholder',
+            }
+
+            var dNd = dragNdrop();
+            dNd.init(config);
+        });
+    </script>
 </body>
+
 </html>

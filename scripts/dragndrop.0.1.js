@@ -205,26 +205,3 @@ var dragNdrop = (function () {
     registerAdditionalDropItems: registerAdditionalDropItems
   };
 });
-
-function ready(callback) {
-  // in case the document is already rendered
-  if (document.readyState != 'loading') callback();
-  // modern browsers
-  else if (document.addEventListener) document.addEventListener('DOMContentLoaded', callback);
-  // IE <= 8
-  else document.attachEvent('onreadystatechange', function () {
-    if (document.readyState == 'complete') callback();
-  });
-}
-
-ready(function () {
-  var config = {
-    dropItemSelector: 'drop-item',
-    dropItemContainerSelector: 'drop-item-container',
-    dropItemPlaceholder: 'drop-item-placeholder',
-  }
-
-  var dNd = dragNdrop();
-  dNd.init(config)
-
-});
