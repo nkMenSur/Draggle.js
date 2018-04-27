@@ -34,34 +34,6 @@ var DragonDrop = (function () {
   //placeholder variable for the transformation style values
   var transform = {};
 
-  //a public function that handles the plugin initialisazion
-  var init = function (config) {
-    //preventing multiple calling of init() and with it, unnecessary event bing and hammer manager instances
-    if (initialized) {
-      console.log("You can't initialize this module twice. Use registerAdditionalDropItems instead.");
-      return;
-    }
-
-    //if a config is provided, the values will override the default values in droppingIndicators, which in turn is used internally
-    if (config) {
-      mapDropIndicatorClasses(config, droppingIndicators);
-    }
-    //get all movable items
-    var itemsToWrap = document.querySelectorAll(classPrefix.concat(droppingIndicators.dropItemSelector));
-
-    //wrap all movable items
-    wrapDropItems(itemsToWrap);
-    //the name says it all
-    bindListeners(droppingIndicators);
-    initialized = true;
-  };
-
-  //public method that takes an array of nodes. It's used to bind dynamically the grag and drop features on dynamically added nodes
-  var registerAdditionalDropItems = function (newlyAddedItemsArray) {
-    wrapDropItems(newlyAddedItemsArray);
-    registerHammers(newlyAddedItemsArray);
-  };
-
   //wraps nodes with other nodes
   function wrap(toBeWrapped, wrapper) {
     toBeWrapped.parentNode.insertBefore(wrapper, toBeWrapped);
@@ -115,20 +87,20 @@ var DragonDrop = (function () {
 
   //it does what it says
   function bindListeners(droppingIndicators) {
-    var dropItems = document.querySelectorAll(classPrefix.concat(droppingIndicators._dropItemSelector));
+    var dropItems = document.querySelectorAll(classPrefix.concat(droppingIndicators.dropItemSelector));
     registerHammers(dropItems);
   }
 
   //it does what it says
-  function moveItemToNewContainer(ev, dropContainer) {
-    var itemToBeMoved = ev.target.parentElement.parentNode.removeChild(ev.target.parentElement);
+  function moveItemToNewContainer(e, dropContainer) {
+    var itemToBeMoved = e.target.parentElement.parentNode.removeChild(e.target.parentElement);
     dropContainer.appendChild(itemToBeMoved);
     resetCurrentMovingElement();
   }
 
   //it does what it says. But it takes the centerpoint of the moving item as a reference.
-  function getDropContainerUnderDroppin(ev) {
-    var rect = ev.target.getBoundingClientRect();
+  function getDropContainerUnderDroppin(e) {
+    var rect = e.target.getBoundingClientRect();
     var x = rect.x + rect.width / 2;
     var y = rect.y + rect.height / 2;
 
@@ -154,27 +126,37 @@ var DragonDrop = (function () {
 
     ticking = false;
   }
-  //keeps the item attached to the cursor while moving.
-  function onPan(ev) {
-    var current = ev.target;
 
-    current.classList.remove(droppingIndicators.animationSelector);
-    current.classList.add(droppingIndicators.movingSelector);
+  //keeps the item attached to the cursor while moving.
+  function onPan(e) {
+    debugger
+    console.log()
+
+    updateElementMovement(e);
+  }
+
+  function updateElementMovement(e) {
+    var movingElement = e.target;
+
+    movingElement.classList.remove(droppingIndicators.animationSelector);
+    movingElement.classList.add(droppingIndicators.movingSelector);
 
     transform.translate = {
-      x: ev.deltaX,
-      y: ev.deltaY
+      x: e.deltaX,
+      y: e.deltaY
     };
 
-    currentMovingElement = ev.target;
+    currentMovingElement = movingElement;
     requestElementUpdate();
   }
 
   //overrides the internal classnames with the ones that the user provided
   function mapDropIndicatorClasses(config, indicators) {
-    config.dropItemSelector && (indicators._dropItemSelector = config.dropItemSelector);
-    config.dropItemContainerClass && (indicators._dropItemContainerSelector = config.dropItemContainerClass);
-    config.dropItemPlaceholder && (indicators._dropItemPlaceholder = config.dropItemContainerClass);
+    config.dropItemSelector && (indicators.dropItemSelector = config.dropItemSelector);
+    config.dropItemContainerClass && (indicators.dropItemContainerSelector = config.dropItemContainerClass);
+    config.dropItemPlaceholder && (indicators.dropItemPlaceholderSelector = config.dropItemContainerClass);
+    config.animationSelector && (indicators.animationSelector = config.animationSelector);
+    config.movingSelector && (indicators.movingSelector = config.movingSelector);
   }
 
   //it does what it says
@@ -199,6 +181,36 @@ var DragonDrop = (function () {
       ticking = false;
     }
   }
+
+  //a public function that handles the plugin initialisazion
+  var init = function (config) {
+    //preventing multiple calling of init() and with it, unnecessary event bing and hammer manager instances
+    if (initialized) {
+      console.log("You can't initialize this module twice. Use registerAdditionalDropItems instead.");
+      return;
+    }
+
+    //if a config is provided, the values will override the default values in droppingIndicators, which in turn is used internally
+    if (config) {
+      mapDropIndicatorClasses(config, droppingIndicators);
+    }
+    //get all movable items
+    var itemsToWrap = document.querySelectorAll(classPrefix.concat(droppingIndicators.dropItemSelector));
+
+    //wrap all movable items
+    wrapDropItems(itemsToWrap);
+
+    //the name says it all
+    bindListeners(droppingIndicators);
+    initialized = true;
+  };
+
+  //public method that takes an array of nodes. It's used to bind dynamically the grag and drop features on dynamically added nodes
+  var registerAdditionalDropItems = function (newlyAddedItemsArray) {
+    wrapDropItems(newlyAddedItemsArray);
+    registerHammers(newlyAddedItemsArray);
+  };
+
   //public methods.
   return {
     init: init,
