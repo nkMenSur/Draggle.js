@@ -101,10 +101,11 @@ var DragonDrop = (function () {
   //it does what it says. But it takes the centerpoint of the moving item as a reference.
   function getDropContainerUnderDroppin(e) {
     var rect = e.target.getBoundingClientRect();
-    var x = rect.x + rect.width / 2;
-    var y = rect.y + rect.height / 2;
-
-    var elementOnPoint = document.elementFromPoint(x, y) || null;
+    var elementOnPoint = null;
+    
+    e.target.style.display = "none";
+    elementOnPoint = document.elementFromPoint(e.center.x, e.center.y) || null;
+    e.target.style.display = "";
 
     if (elementOnPoint !== null && elementOnPoint.classList.toString().indexOf(droppingIndicators.dropItemContainerSelector) > -1) {
       return elementOnPoint;
@@ -129,8 +130,11 @@ var DragonDrop = (function () {
 
   //keeps the item attached to the cursor while moving.
   function onPan(e) {
-    debugger
-    console.log()
+    var x = e.pointers[0].clientX;
+    var y = e.pointers[0].clientY;
+    var elementOnPoint = null;
+    // console.log(x, y)
+    // drawDebugCross(e.center.x, e.center.y);
 
     updateElementMovement(e);
   }
@@ -217,3 +221,4 @@ var DragonDrop = (function () {
     registerAdditionalDropItems: registerAdditionalDropItems
   };
 });
+
