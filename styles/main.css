@@ -13,13 +13,13 @@
 .drop-item-placeholder {
     height:50px;
     width:50px;
-    /* background-color: yellow; */
-    display:inline-block;
+    display: block;
+    float: left;
     
 }
 .animate {
     transition: all 0.3s;
 }
 .moving{
-    pointer-events: none;
+    /* pointer-events: none; */
 }
