@@ -133,9 +133,7 @@ var DragonDrop = (function () {
     var x = e.pointers[0].clientX;
     var y = e.pointers[0].clientY;
     var elementOnPoint = null;
-    // console.log(x, y)
-    // drawDebugCross(e.center.x, e.center.y);
-
+    
     updateElementMovement(e);
   }
 
