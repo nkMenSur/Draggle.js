@@ -4,10 +4,10 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>DragonDrop Simple Example</title>
+    <title>Draggle - Simple Example</title>
     <link rel="stylesheet" type="text/css" media="screen" href="styles/main.css" />
     <script src="scripts/hammer.2.0.8.js"></script>
-    <script src="scripts/DragonDrop.0.1.js"></script>
+    <script src="scripts/draggle.0.3.js"></script>
 </head>
 
 <body>
@@ -53,8 +53,27 @@
                 dropItemPlaceholderSelector: 'drop-item-placeholder',
             }
 
-            var dNd = DragonDrop();
+            var dNd = Draggle();
             dNd.init(config);
+
+            document.addEventListener('ItemPickedUp', function(e) {
+                console.log('PickUp!')
+                console.log('Item: ', e.detail.contextItem);
+                console.log('CursorPos: ', e.detail.cursorPosition);
+            });
+            
+            document.addEventListener('ItemMoving', function(e) {
+                console.log('Moving!')
+                console.log('Item: ', e.detail.contextItem);
+                console.log('CursorPos: ', e.detail.cursorPosition);
+            });
+            
+            document.addEventListener('ItemDropped', function(e) {
+                console.log('Dropped!')
+                console.log('Item: ', e.detail.contextItem);
+                console.log('CursorPos: ', e.detail.cursorPosition);
+                console.log('DropContainer: ', e.detail.targetDropContainer)
+            });
         });
     </script>
 </body>
