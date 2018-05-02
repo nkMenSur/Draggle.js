@@ -1,4 +1,4 @@
-# DragonDrop 0.1
+# Draggle 0.3
 A lightweight drag and drop library.
 
 min requirements: hammer.2.0.8.js && IE11+
@@ -21,16 +21,16 @@ var config = {
   dropItemPlaceholder: 'drop-item-placeholder',
 }
 
-var dNd = DragonDrop();
+var dNd = Draggle();
 dNd.init(config)
 ```
 
-## Binding DragonDrop features to dynamically added nodes:
+## Binding Draggle features to dynamically added nodes:
 ```javascript
 dNd.registerAdditionalDropItems(arrayOfNewlyCreatedNodes);
 ```
 ## Simple Example:
-[Take a look!](https://nkmensur.github.io/DragonDrop/Simple-Example.html)
+[Take a look!](https://nkmensur.github.io/Draggle/Simple-Example.html)
 
 # Documentation:
 ## Events:

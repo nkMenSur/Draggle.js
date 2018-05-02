@@ -1,11 +1,11 @@
 "use strict";
 
-var DragonDrop = (function () {
+var Draggle = (function () {
   var initialized = false;
   var Hammer = window.Hammer;
 
   if (!Hammer) {
-    console.error('HammerJs 2.0.8 needs to be loaded befor dragNdrop');
+    console.error('HammerJs 2.0.8 needs to be loaded before Draggle');
     return;
   }
   
