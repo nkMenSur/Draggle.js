@@ -30,7 +30,7 @@ dNd.init(config)
 dNd.registerAdditionalDropItems(arrayOfNewlyCreatedNodes);
 ```
 ## Simple Example:
-[Take a look!](https://nkmensur.github.io/Draggle/Simple-Example.html)
+[Take a look!](https://nkmensur.github.io/Draggle.js/Simple-Example.html)
 
 # Documentation:
 ## Events:
