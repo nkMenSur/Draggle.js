@@ -29,5 +29,6 @@ dNd.init(config)
 ```javascript
 dNd.registerAdditionalDropItems(arrayOfnewlyCreatedNodes);
 ```
-    
-    
+
+## Simple Example:
+[Take a look!](https://nkmensur.github.io/DragonDrop/Simple-Example.html)
