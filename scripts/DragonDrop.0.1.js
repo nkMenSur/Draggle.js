@@ -12,7 +12,7 @@ var DragonDrop = (function () {
   var ticking = false;
   //placeholder for the element that is currently moving
   var currentMovingElement = null;
-
+  var currentPointerPosition = null;
   //polifill for browsers that don't support requestAnimationFrame
   var reqAnimationFrame = (function () {
     return window[Hammer.prefixed(window, 'requestAnimationFrame')] || function (callback) {
@@ -102,7 +102,7 @@ var DragonDrop = (function () {
   function getDropContainerUnderDroppin(e) {
     var rect = e.target.getBoundingClientRect();
     var elementOnPoint = null;
-    
+
     e.target.style.display = "none";
     elementOnPoint = document.elementFromPoint(e.center.x, e.center.y) || null;
     e.target.style.display = "";
@@ -130,10 +130,14 @@ var DragonDrop = (function () {
 
   //keeps the item attached to the cursor while moving.
   function onPan(e) {
-    var x = e.pointers[0].clientX;
-    var y = e.pointers[0].clientY;
-    var elementOnPoint = null;
-    
+    var x = e.center.y;
+    var y = e.center.x;
+
+    currentPointerPosition = {
+      x: x,
+      y: y
+    };
+
     updateElementMovement(e);
   }
 
@@ -219,4 +223,3 @@ var DragonDrop = (function () {
     registerAdditionalDropItems: registerAdditionalDropItems
   };
 });
-
