@@ -8,11 +8,8 @@ var DragonDrop = (function () {
     console.error('HammerJs 2.0.8 needs to be loaded befor dragNdrop');
     return;
   }
-
-  var ticking = false;
-  //placeholder for the element that is currently moving
-  var currentMovingElement = null;
-  var currentPointerPosition = null;
+  
+  /*============================================================ POLYFILLS ============================================================*/
   //polifill for browsers that don't support requestAnimationFrame
   var reqAnimationFrame = (function () {
     return window[Hammer.prefixed(window, 'requestAnimationFrame')] || function (callback) {
@@ -20,6 +17,28 @@ var DragonDrop = (function () {
     };
   })();
 
+  //CustomEvent Polyfill for IE >=9.
+  (function () {
+    if (typeof window.CustomEvent === "function") return false;
+
+    function CustomEvent(event, params) {
+      var evt = document.createEvent('CustomEvent');
+
+      params = params || { bubbles: false, cancelable: false, detail: undefined };
+      evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+
+      return evt;
+    }
+
+    CustomEvent.prototype = window.Event.prototype;
+    window.CustomEvent = CustomEvent;
+  })();
+  /*============================================================ POLYFILLS ============================================================*/
+
+  var ticking = false;
+  //placeholder for the element that is currently moving
+  var currentMovingElement = null;
+  var currentPointerPosition = null;
   var classPrefix = '.';
 
   //default class names that will be used if the user doesn't provide them via a config object
@@ -68,6 +87,15 @@ var DragonDrop = (function () {
         if (e.isFinal) {
           onRelease(e);
         }
+        if(e.isFirst) {
+          document.dispatchEvent(new CustomEvent('ItemPickedUp', {
+            detail: {
+              originalEvent: e,
+              contextItem: e.target,
+              cursorPosition: e.center
+            }
+          }));
+        }
       });
     }
   }
@@ -83,6 +111,17 @@ var DragonDrop = (function () {
     } else {
       resetCurrentMovingElement();
     }
+    
+    document.dispatchEvent(new CustomEvent('ItemDropped', {
+      detail: {
+        originalEvent: e,
+        targetDropContainer: dropContainer,
+        success: dropContainer !== null,
+        contextItem: e.target,
+        cursorPosition: e.center
+      }
+    }));
+
   }
 
   //it does what it says
@@ -139,6 +178,14 @@ var DragonDrop = (function () {
     };
 
     updateElementMovement(e);
+
+    document.dispatchEvent(new CustomEvent('ItemMoving', {
+      detail: {
+        originalEvent: e,
+        contextItem: e.target,
+        cursorPosition: e.center
+      }
+    }));
   }
 
   function updateElementMovement(e) {
