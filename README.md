@@ -25,9 +25,9 @@ var dNd = DragonDrop();
 dNd.init(config)
 ```
 
-## Binding dragNdrop features to dynamically added nodes:
+## Binding DragonDrop features to dynamically added nodes:
 ```javascript
-dNd.registerAdditionalDropItems(arrayOfnewlyCreatedNodes);
+dNd.registerAdditionalDropItems(arrayOfNewlyCreatedNodes);
 ```
 ## Simple Example:
 [Take a look!](https://nkmensur.github.io/DragonDrop/Simple-Example.html)
