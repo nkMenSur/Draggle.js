@@ -29,6 +29,14 @@ dNd.init(config)
 ```javascript
 dNd.registerAdditionalDropItems(arrayOfnewlyCreatedNodes);
 ```
-
 ## Simple Example:
 [Take a look!](https://nkmensur.github.io/DragonDrop/Simple-Example.html)
+
+# Documentation:
+## Events:
+ EventName      | Emitted when:            | Event Parameters                                       |
+| ------------- |:------------------------:| ------------------------------------------------------:|
+| `ItemPickedUp`| User picks up a dropItem | detail => originalEvent - contextItem - cursorPosition |
+| `ItemMoving`  | User drags a dropItem    | detail => originalEvent - contextItem - cursorPosition |
+| `ItemDropped` | User Releases a dropItem | detail => originalEvent - targetDropContainer - success - contextItem - cursorPosition |
+
